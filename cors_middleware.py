@@ -13,6 +13,13 @@ def add_cors_headers(response):
 def setup_cors_middleware(app):
     @app.after_request
     def after_request(response):
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+    return app
+    @app.after_request
+    def after_request(response):
         print(f"\n=== After Request Processing ===\nRequest Method: {request.method}\nEndpoint: {request.endpoint}\nMIME Type: {response.mimetype}")
         # Don't add CORS headers for static file responses
         if not response.mimetype.startswith('text/html'):
