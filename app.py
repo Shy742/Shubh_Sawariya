@@ -7,7 +7,10 @@ from cors_middleware import setup_cors_middleware
 import json
 import logging
 # Initialize Flask app (only once)
-app = Flask(__name__, static_folder=".", static_url_path="")
+app = Flask(__name__, 
+    static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'public'),
+    static_url_path=''
+)
 
 # Update CORS configuration
 def setup_cors_middleware(app):
@@ -487,11 +490,6 @@ def chat():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/')
-# Update Flask initialization
-app = Flask(__name__, 
-    static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'public'),
-    static_url_path=''
-)
 
 @app.route('/')
 def index():
