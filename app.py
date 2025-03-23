@@ -3,25 +3,19 @@ from flask import Flask, request, jsonify, send_from_directory
 import google.generativeai as genai
 from PyPDF2 import PdfReader
 from dotenv import load_dotenv
-from cors_middleware import setup_cors_middleware
 import json
 import logging
+
 # Initialize Flask app (only once)
 app = Flask(__name__, 
     static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'public'),
     static_url_path=''
 )
 
-# Update CORS configuration
-def setup_cors_middleware(app):
-    @app.after_request
-    def after_request(response):
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        return response
-    return app
+# Import CORS middleware from cors_middleware.py
+from cors_middleware import setup_cors_middleware
 
+# Apply CORS middleware
 app = setup_cors_middleware(app)
 
 # Configure logging
@@ -490,8 +484,6 @@ def chat():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/')
-
-@app.route('/')
 def index():
     try:
         return app.send_static_file('index.html')
@@ -508,11 +500,7 @@ def serve_static(path):
         return jsonify({'error': f'File not found: {path}'}), 404
 
 @app.errorhandler(404)
-def not_found_error(error):
-    return app.send_static_file('index.html')
-
-@app.errorhandler(404)
-def not_found(e):
+def not_found(error):
     return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/styles.css')

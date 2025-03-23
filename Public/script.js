@@ -719,6 +719,7 @@ async function sendMessage() {
     input.value = '';
 
     try {
+        // Update the chat endpoint to use relative path
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: {
