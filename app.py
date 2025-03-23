@@ -6,7 +6,10 @@ from dotenv import load_dotenv
 from cors_middleware import setup_cors_middleware
 import json
 import logging
-app = Flask(__name__, static_folder="../public", static_url_path="")
+# Initialize Flask app (only once)
+app = Flask(__name__, static_folder="public", static_url_path="")
+setup_cors_middleware(app)
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,8 +32,9 @@ except Exception as e:
     logger.error(f"Error initializing Gemini model: {str(e)}")
     model = None
 
-app = Flask(__name__)
-setup_cors_middleware(app)
+# Remove this duplicate initialization:
+# app = Flask(__name__)
+# setup_cors_middleware(app)
 
 def extract_text_from_pdf(pdf_file):
     logger.info(f"Starting PDF text extraction for file: {pdf_file.filename}")
