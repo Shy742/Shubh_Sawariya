@@ -7,7 +7,7 @@ from cors_middleware import setup_cors_middleware
 import json
 import logging
 # Initialize Flask app (only once)
-app = Flask(__name__, static_folder="public", static_url_path="")
+app = Flask(__name__, static_folder=".", static_url_path="")
 
 # Update CORS configuration
 def setup_cors_middleware(app):
@@ -488,15 +488,19 @@ def chat():
 
 @app.route('/')
 def index():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory('public', 'index.html')
 
 @app.route('/styles.css')
 def serve_css():
-    return send_from_directory('.', 'styles.css')
+    return send_from_directory('public', 'styles.css')
 
 @app.route('/script.js')
 def serve_js():
-    return send_from_directory('.', 'script.js')
+    return send_from_directory('public', 'script.js')
+
+@app.route('/shubh_logo.png')
+def serve_logo():
+    return send_from_directory('public', 'shubh_logo.png')
 
 if __name__ == '__main__':
     logger.info("\n* Server is ready to process PDF uploads and chat! You can now upload your financial documents and ask questions.")
