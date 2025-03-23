@@ -1,0 +1,351 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+}
+
+/* Top bar styles */
+.top-bar {
+    background-color: #1a237e;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.company-logo {
+    height: 40px;
+    width: auto;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.action-button {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.action-button:hover {
+    background-color: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.action-button.tax {
+    background-color: #4caf50;
+}
+
+.action-button.tax:hover {
+    background-color: #43a047;
+}
+
+.action-button.subsidy {
+    background-color: #2196f3;
+}
+
+.action-button.subsidy:hover {
+    background-color: #1e88e5;
+}
+
+.action-button.finance {
+    background-color: #ff9800;
+}
+
+.action-button.finance:hover {
+    background-color: #f57c00;
+}
+
+/* Main container styles */
+.main-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    padding: 20px;
+    gap: 20px;
+    background-color: white;
+}
+
+/* Left section styles */
+.left-section {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Upload section styles */
+.upload-section {
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.section-header {
+    margin-bottom: 15px;
+}
+
+.section-header h2 {
+    margin: 0 0 5px 0;
+    color: #34495e;
+    font-size: 18px;
+}
+
+.section-header p {
+    margin: 0;
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.upload-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.upload-section input[type="file"] {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+}
+
+.upload-section button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.upload-section button:hover {
+    background-color: #45a049;
+}
+
+/* Sankey diagram area */
+.sankey-area {
+    flex: 1;
+    padding: 25px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    min-height: 400px;
+}
+
+#sankey {
+    width: 100%;
+    height: 100%;
+}
+
+/* Right section styles */
+.right-section {
+    flex: 2;
+}
+
+/* Chat section styles */
+.chat-section {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.chat-body {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: #f8f9fa;
+}
+
+.chat-message {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.user-message {
+    background-color: #e3f2fd;
+}
+
+.ai-message {
+    background-color: #f5f5f5;
+}
+
+.chat-label {
+    background-color: #3498db;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ai-message .chat-label {
+    background-color: #34495e;
+}
+
+.chat-content {
+    flex: 1;
+    padding: 8px;
+    line-height: 1.4;
+}
+
+/* Markdown styling for AI responses */
+.ai-message .chat-content h2,
+.ai-message .chat-content h3 {
+    margin-top: 10px;
+    margin-bottom: 8px;
+    color: #34495e;
+}
+
+.ai-message .chat-content h2 {
+    font-size: 18px;
+}
+
+.ai-message .chat-content h3 {
+    font-size: 16px;
+}
+
+.ai-message .chat-content strong {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.ai-message .chat-content ul,
+.ai-message .chat-content ol {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
+.ai-message .chat-content li {
+    margin-bottom: 5px;
+}
+
+.ai-message .chat-content p {
+    margin-bottom: 10px;
+}
+
+.ai-message .chat-content code {
+    background-color: #f8f9fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 90%;
+}
+
+.chat-input {
+    padding: 15px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+    background-color: white;
+}
+
+.chat-input input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.chat-input input[type="text"]:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
+}
+
+.chat-input button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.chat-input button:hover {
+    background-color: #0069d9;
+}
+
+.status-message {
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+/* Diagram selector */
+.diagram-selector {
+    position: absolute;
+    top: 80px;
+    left: 25px;
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.diagram-selector:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
+}
