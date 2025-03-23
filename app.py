@@ -488,7 +488,21 @@ def chat():
 
 @app.route('/')
 def index():
-    return send_from_directory('public', 'index.html')
+    # Update Flask initialization
+    app = Flask(__name__, 
+    static_folder='public',  # Relative to app.py
+    static_url_path=''  # Empty string to serve from root
+    )
+    
+    # Add error handler for 404
+    @app.errorhandler(404)
+    def not_found(e):
+        return send_from_directory(app.static_folder, 'index.html')
+    
+    # Update port configuration
+    if __name__ == '__main__':
+        port = int(os.environ.get('PORT', 10000))  # Default to Render's port
+        app.run(host='0.0.0.0', port=port)
 
 @app.route('/styles.css')
 def serve_css():
