@@ -487,22 +487,35 @@ def chat():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/')
+# Update Flask initialization
+app = Flask(__name__, 
+    static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'public'),
+    static_url_path=''
+)
+
+@app.route('/')
 def index():
-    # Update Flask initialization
-    app = Flask(__name__, 
-    static_folder='public',  # Relative to app.py
-    static_url_path=''  # Empty string to serve from root
-    )
-    
-    # Add error handler for 404
-    @app.errorhandler(404)
-    def not_found(e):
-        return send_from_directory(app.static_folder, 'index.html')
-    
-    # Update port configuration
-    if __name__ == '__main__':
-        port = int(os.environ.get('PORT', 10000))  # Default to Render's port
-        app.run(host='0.0.0.0', port=port)
+    try:
+        return app.send_static_file('index.html')
+    except Exception as e:
+        logger.error(f"Error serving index.html: {str(e)}")
+        return jsonify({'error': 'Failed to load index page'}), 500
+
+@app.route('/<path:path>')
+def serve_static(path):
+    try:
+        return app.send_static_file(path)
+    except Exception as e:
+        logger.error(f"Error serving file {path}: {str(e)}")
+        return jsonify({'error': f'File not found: {path}'}), 404
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return app.send_static_file('index.html')
+
+@app.errorhandler(404)
+def not_found(e):
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/styles.css')
 def serve_css():
