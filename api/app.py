@@ -1,7 +1,22 @@
-# ... existing imports ...
+import os
+from flask import Flask, request, jsonify, send_from_directory
+import google.generativeai as genai
+from PyPDF2 import PdfReader
+from dotenv import load_dotenv
+from cors_middleware import setup_cors_middleware
+import json
+import logging
 
-# Remove or comment out load_dotenv() since Render uses environment variables
-# load_dotenv()
+# Configure logging first
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Initialize Flask app
+app = Flask(__name__, static_folder="../public", static_url_path="")
+setup_cors_middleware(app)
+
+# Load environment variables
+load_dotenv()
 
 # Configure Gemini AI
 try:
@@ -17,8 +32,6 @@ try:
 except Exception as e:
     logger.error(f"Error initializing Gemini model: {str(e)}")
     model = None
-
-# ... rest of your code ...
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
