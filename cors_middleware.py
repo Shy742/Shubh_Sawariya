@@ -14,12 +14,9 @@ def setup_cors_middleware(app):
     @app.after_request
     def after_request(response):
         print(f"\n=== After Request Processing ===\nRequest Method: {request.method}\nEndpoint: {request.endpoint}\nMIME Type: {response.mimetype}")
-        # Don't add CORS headers for static file responses
-        if not response.mimetype.startswith('text/html'):
-            print("Adding CORS headers to non-HTML response")
-            return add_cors_headers(response)
-        print("Skipping CORS headers for HTML response")
-        return response
+        # Apply CORS headers to all responses
+        print("Adding CORS headers to response")
+        return add_cors_headers(response)
 
     @app.before_request
     def handle_preflight():
