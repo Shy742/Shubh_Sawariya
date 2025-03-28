@@ -35,7 +35,12 @@ function processPDF() {
     const formData = new FormData();
     formData.append('file', file);
     
-    fetch('http://localhost:5000/api/process-pdf', {
+    // Get the base URL dynamically (works both locally and when deployed)
+    const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+        ? 'http://localhost:5000' 
+        : window.location.origin;
+        
+    fetch(`${baseUrl}/api/process-pdf`, {
         method: 'POST',
         body: formData
     })
@@ -675,77 +680,139 @@ window.onload = function() {
     });
 };
 
-let financialData = null;
-
-async function uploadPDF() {
-    const fileInput = document.getElementById('pdfUpload');
-    const file = fileInput.files[0];
-    if (!file) {
-        alert('Please select a PDF file');
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-        const response = await fetch('/api/process-pdf', {
-            method: 'POST',
-            body: formData
-        });
-        const result = await response.json();
-        if (result.error) {
-            alert(result.error);
-        } else {
-            financialData = result.data;
-            addMessage('System', 'PDF processed successfully. You can now ask questions about the financial data.');
-        }
-    } catch (error) {
-        alert('Error uploading file: ' + error);
-    }
-}
-
-async function sendMessage() {
-    const input = document.getElementById('userInput');
-    const message = input.value.trim();
+function sendMessage() {
+    const inputField = document.getElementById('chat-input-field');
+    const message = inputField.value.trim();
     
     if (!message) return;
+    
+    // Add user message to chat
+    addChatMessage('User', message);
+    
+    // Clear input field
+    inputField.value = '';
+    
+    // Process the message and generate AI response
+    processUserMessage(message);
+}
+
+function processUserMessage(message) {
+    // Get the financial data from the last processed PDF
+    const financialData = window.lastProcessedData;
+    
     if (!financialData) {
-        alert('Please upload and process a PDF first');
+        addChatMessage('AI', 'Please upload a financial document first to analyze metrics.', true);
         return;
     }
-
-    addMessage('You', message);
-    input.value = '';
-
-    try {
-        // Update the chat endpoint to use relative path
-        const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: message,
-                financial_data: financialData
-            })
-        });
-        const result = await response.json();
-        if (result.error) {
-            addMessage('System', 'Error: ' + result.error);
-        } else {
-            addMessage('Assistant', result.response);
+    
+    // Show loading message
+    addChatMessage('AI', 'Analyzing your question...', true);
+    
+    // Send the message and financial data to the backend API
+    fetch('http://localhost:5000/api/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            message: message,
+            financial_data: financialData
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.error || `Server error: ${response.status}`);
+            });
         }
-    } catch (error) {
-        addMessage('System', 'Error: ' + error);
+        return response.json();
+    })
+    .then(data => {
+        // Remove the loading message
+        const chatBody = document.querySelector('.chat-body');
+        chatBody.removeChild(chatBody.lastChild);
+        
+        // Add the AI response to the chat
+        addChatMessage('AI', data.response, true);
+    })
+    .catch(error => {
+        console.error('Error processing message:', error);
+        
+        // Remove the loading message
+        const chatBody = document.querySelector('.chat-body');
+        chatBody.removeChild(chatBody.lastChild);
+        
+        // Add error message to chat
+        addChatMessage('AI', `Sorry, I encountered an error: ${error.message}`, true);
+    });
+}
+
+function calculateFinancialMetrics(data) {
+    const metrics = {
+        wacc: 0,
+        costOfDebt: 0,
+        taxRate: 0,
+        debtToEquity: 0,
+        profit: 0
+    };
+    
+    // Calculate WACC
+    const totalDebt = data.balance_sheet.liabilities.current.reduce((sum, item) => sum + item.value, 0) +
+                      data.balance_sheet.liabilities.non_current.reduce((sum, item) => sum + item.value, 0);
+    const totalEquity = data.balance_sheet.equity.reduce((sum, item) => sum + item.value, 0);
+    const totalCapital = totalDebt + totalEquity;
+    
+    // Assume cost of equity is 10% and cost of debt is 5% (these should be calculated based on actual data)
+    const costOfEquity = 0.10;
+    metrics.costOfDebt = 0.05;
+    
+    // Calculate tax rate based on income and profit
+    const totalRevenue = data.income_statement.revenue.operating.reduce((sum, item) => sum + item.value, 0) +
+                        data.income_statement.revenue.non_operating.reduce((sum, item) => sum + item.value, 0);
+    const totalExpenses = data.income_statement.expenses.operating.reduce((sum, item) => sum + item.value, 0) +
+                         data.income_statement.expenses.non_operating.reduce((sum, item) => sum + item.value, 0);
+    metrics.profit = totalRevenue - totalExpenses;
+    
+    // Assume standard corporate tax rate of 30%
+    metrics.taxRate = 0.30;
+    
+    // Calculate WACC
+    metrics.wacc = (totalEquity / totalCapital) * costOfEquity +
+                   (totalDebt / totalCapital) * metrics.costOfDebt * (1 - metrics.taxRate);
+    
+    // Calculate Debt to Equity ratio
+    metrics.debtToEquity = totalDebt / totalEquity;
+    
+    return metrics;
+}
+
+function generateAIResponse(message, metrics) {
+    const query = message.toLowerCase();
+    
+    if (query.includes('wacc')) {
+        return `The Weighted Average Cost of Capital (WACC) is ${(metrics.wacc * 100).toFixed(2)}%. This represents the average rate that the company is expected to pay to finance its assets.`;
+    }
+    else if (query.includes('debt') && query.includes('equity')) {
+        return `The Debt to Equity ratio is ${metrics.debtToEquity.toFixed(2)}. This indicates the proportion of debt and equity the company is using to finance its assets.`;
+    }
+    else if (query.includes('tax')) {
+        return `The effective tax rate is ${(metrics.taxRate * 100).toFixed(2)}%. This represents the percentage of profit that goes to tax payments.`;
+    }
+    else if (query.includes('profit')) {
+        return `The current profit is ${metrics.profit.toFixed(2)}. This is calculated as the difference between total revenue and total expenses.`;
+    }
+    else if (query.includes('cost of debt')) {
+        return `The cost of debt is ${(metrics.costOfDebt * 100).toFixed(2)}%. This represents the effective interest rate the company pays on its borrowings.`;
+    }
+    else {
+        return `I can provide information about various financial metrics including WACC, debt to equity ratio, tax rate, profit, and cost of debt. What would you like to know about?`;
     }
 }
 
-function addMessage(sender, text) {
-    const messages = document.getElementById('chat-messages');
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'message';
-    messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
-    messages.appendChild(messageDiv);
-    messages.scrollTop = messages.scrollHeight;
-}
+// Modify processPDF function to store the last processed data
+const originalProcessPDF = window.processPDF;
+window.processPDF = function() {
+    originalProcessPDF.apply(this, arguments);
+    // Store the processed data for chat analysis
+    window.lastProcessedData = financialData;
+};

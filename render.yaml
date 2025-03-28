@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: brm-financial-analyzer
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app -c gunicorn_config.py
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+    plan: free

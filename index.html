@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Sankey Diagram</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Add the necessary libraries for PDF parsing and Sankey diagram -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+    <!-- Add marked.js for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<select id="diagram-type" class="diagram-selector">
+    <option value="balance-sheet">Balance Sheet</option>
+    <option value="pl">Profit & Loss</option>
+</select>
+<body>
+    <div class="top-bar">
+        <div class="title">
+            <img src="./shubh_logo.png" alt="Shubh Sawariya Industries" class="company-logo">
+            <span>Shubh Sawariya Industries Pvt. Ltd Jamshedpur</span>
+        </div>
+        <div class="action-buttons">
+            <a href="https://taxreply.com/" class="action-button tax">🧾 Tax Assistant</a>
+            <a href="https://chatgpt.com/g/g-qCWCpHF2m-gst-guide-ca-ram-taparia" class="action-button subsidy">🏢 MSME Subsidies</a>
+            <a href="https://scira.ai/" class="action-button finance">💰 Financing Options</a>
+        </div>
+    </div>
+    <div class="main-container">
+        <div class="left-section">
+            <div class="upload-section">
+                <div class="section-header">
+                    <h2>1. Upload Financial Documents</h2>
+                    <p>Upload your financial statements to visualize and analyze them</p>
+                </div>
+                <div class="upload-controls">
+                    <input type="file" id="pdf-upload" accept=".pdf">
+                    <button onclick="processPDF()">Process PDF</button>
+                </div>
+            </div>
+            <div class="sankey-area">
+                <svg id="sankey"></svg>
+            </div>
+        </div>
+        <div class="right-section">
+            <div class="chat-section">
+                <div class="section-header">
+                    <h2>2. Financial Analysis Assistant</h2>
+                    <p>Ask questions about your financial data</p>
+                </div>
+                <div class="chat-body">
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="chat-input-field" placeholder="Ask about WACC, debt ratios, profitability...">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

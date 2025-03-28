@@ -3,20 +3,9 @@ from flask import Flask, request, jsonify, send_from_directory
 import google.generativeai as genai
 from PyPDF2 import PdfReader
 from dotenv import load_dotenv
+from cors_middleware import setup_cors_middleware
 import json
 import logging
-
-# Initialize Flask app (only once)
-app = Flask(__name__, 
-    static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'public'),
-    static_url_path=''
-)
-
-# Import CORS middleware from cors_middleware.py
-from cors_middleware import setup_cors_middleware
-
-# Apply CORS middleware
-app = setup_cors_middleware(app)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -40,9 +29,8 @@ except Exception as e:
     logger.error(f"Error initializing Gemini model: {str(e)}")
     model = None
 
-# Remove this duplicate initialization:
-# app = Flask(__name__)
-# setup_cors_middleware(app)
+app = Flask(__name__)
+setup_cors_middleware(app)
 
 def extract_text_from_pdf(pdf_file):
     logger.info(f"Starting PDF text extraction for file: {pdf_file.filename}")
@@ -485,35 +473,19 @@ def chat():
 
 @app.route('/')
 def index():
-    try:
-        return app.send_static_file('index.html')
-    except Exception as e:
-        logger.error(f"Error serving index.html: {str(e)}")
-        return jsonify({'error': 'Failed to load index page'}), 500
-
-@app.route('/<path:path>')
-def serve_static(path):
-    try:
-        return app.send_static_file(path)
-    except Exception as e:
-        logger.error(f"Error serving file {path}: {str(e)}")
-        return jsonify({'error': f'File not found: {path}'}), 404
-
-@app.errorhandler(404)
-def not_found(error):
-    return send_from_directory(app.static_folder, 'index.html')
+    return send_from_directory('.', 'index.html')
 
 @app.route('/styles.css')
 def serve_css():
-    return send_from_directory('public', 'styles.css')
+    return send_from_directory('.', 'styles.css')
 
 @app.route('/script.js')
 def serve_js():
-    return send_from_directory('public', 'script.js')
+    return send_from_directory('.', 'script.js')
 
 @app.route('/shubh_logo.png')
 def serve_logo():
-    return send_from_directory('public', 'shubh_logo.png')
+    return send_from_directory('.', 'shubh_logo.png')
 
 if __name__ == '__main__':
     logger.info("\n* Server is ready to process PDF uploads and chat! You can now upload your financial documents and ask questions.")
