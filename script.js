@@ -709,7 +709,12 @@ function processUserMessage(message) {
     addChatMessage('AI', 'Analyzing your question...', true);
     
     // Send the message and financial data to the backend API
-    fetch('http://localhost:5000/api/chat', {
+    // Get the base URL dynamically (works both locally and when deployed)
+    const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+        ? 'http://localhost:5000' 
+        : window.location.origin;
+        
+    fetch(`${baseUrl}/api/chat`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
